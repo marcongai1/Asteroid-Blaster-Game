@@ -11,7 +11,9 @@ import java.awt.Rectangle;
 public class Game{
     int shipX,shipY;
     Rectangle playerRectangle;
-    ArrayList projectiles,enemyRectangles,asteroids;
+    ArrayList<Rectangle> enemyRectangles;
+    ArrayList<Asteroid> asteroids;
+    ArrayList<Projectile> projectiles;
     JFrame frame;
     Timer timer;
     boolean gameOver;
@@ -61,8 +63,8 @@ public class Game{
     }
     public void updateEnemyRectanges(){
         for (int i = 0; i < asteroids.size(); i++) {
-            Asteroid asteroid = (Asteroid) asteroids.get(i);
-            Rectangle enemyRectangle = (Rectangle) enemyRectangles.get(i);
+            Asteroid asteroid = asteroids.get(i);
+            Rectangle enemyRectangle = enemyRectangles.get(i);
             int newX = asteroid.getAsteroidX(); 
             int newY = asteroid.getAsteroidY();  
             enemyRectangle.setLocation(newX, newY);
@@ -72,26 +74,34 @@ public class Game{
         //up
         if(event.getKeyCode()==38){  
             if(shipY<50){}
-            else
+            else{
                 shipY--;
+                playerRectangle.setLocation(shipX, shipY);
+            }
         }
         //right
         if(event.getKeyCode()==39){ 
             if(shipX>350){}
-            else
-                shipX++;  
+            else{
+                shipX++; 
+                playerRectangle.setLocation(shipX, shipY);
+            } 
         }
         //down
         if(event.getKeyCode()==40){   
             if(shipY>550){}
-            else
+            else{
                 shipY++;
+                playerRectangle.setLocation(shipX, shipY);
+            }
         }
         //left
         if(event.getKeyCode()==37){  
             if(shipX<50){}
-            else   
+            else{
                 shipX--; 
+                playerRectangle.setLocation(shipX, shipY);
+            }
         }
         //space bar shooting
         if(event.getKeyCode()==32){
@@ -99,7 +109,10 @@ public class Game{
         }
     }
     private void shoot(){
-        
+        int shipMidpointX = shipX + 25;
+        int shipMidpointY = shipY + 25;    
+        Projectile projectile = new Projectile(shipMidpointX, shipMidpointY);
+        projectiles.add(projectile);    
     }
     private void checkForAsteroidCollisions(){
 

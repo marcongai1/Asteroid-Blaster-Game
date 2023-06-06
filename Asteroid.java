@@ -1,11 +1,13 @@
 import javax.swing.JComponent;
 public class Asteroid {
-    int asteroidX;
+    int asteroidX = (int)(Math.random()*500)+50;
     int asteroidY;
     boolean isDestroyed;
     JComponent component;
     public Asteroid(JComponent component){
         this.component = component;
+        asteroidX = (int)(Math.random()*500)+50;
+        asteroidY = 0;
     }
     public int getAsteroidY(){
         return asteroidX;

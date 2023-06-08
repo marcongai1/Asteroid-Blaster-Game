@@ -22,10 +22,10 @@ public class Game extends JComponent{
         asteroids = new ArrayList<>();
         projectiles = new ArrayList<>();
         enemyRectangles = new ArrayList<>();
-        shipX = 250;// finish statement
-        shipY = 500;// finish statement
+        shipX = 250;
+        shipY = 500;
         lives = 3;
-        playerRectangle = new Rectangle(shipX, shipY, 50, 50);// finish Statement
+        playerRectangle = new Rectangle(shipX, shipY, 50, 50);
 
         frame.setFocusable(true);    
         frame.addKeyListener(new KeyAdapter(){
@@ -138,13 +138,47 @@ public class Game extends JComponent{
         }
     }
     private void checkProjectileCollisions(){
-
+        for (int i = 0; i < asteroids.size(); i++) {
+            Asteroid asteroid = asteroids.get(i);
+            Rectangle enermyRectangle = enemyRectangles.get(i);
+    
+            for (int j = 0; j < projectiles.size(); j++) {
+                Projectile projectile = projectiles.get(j);
+                int projectileX = projectile.getX();
+                int projectileY = projectile.getY();
+    
+                // Check if projectile moves off the screen
+                if (projectileY < 0) {
+                    projectiles.remove(j);
+                    j--;
+                }
+                // Check if projectile intersects with asteroid
+                else if (enermyRectangle.intersects(projectileX,projectileY,10,10)) {
+                    projectiles.remove(j);
+                    removeAsteroid(i);
+                    asteroidsHit++;
+                    j--;
+                    i--;
+                    frame.repaint();
+                    break;
+                }
+            }
+        }
     }
     private void updateProjectiles(){
-
+        ArrayList<Projectile> newProjectiles = new ArrayList<>();
+        for(Projectile projectile : projectiles){
+            projectile.updateProjectilePosition();
+            newProjectiles.add(projectile);
+        }
+        projectiles = newProjectiles;
     }
     private void updateScreen(){
-
+        checkForAsteroidCollisions();
+        updateAsteroidLocation();
+        generateNewAsteroid();
+        checkForAsteroidCollisions();
+        updateProjectiles();
     }
     private void drawShip(Graphics graphics){
 

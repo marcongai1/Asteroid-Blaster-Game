@@ -33,52 +33,49 @@ public class Game extends JComponent {
         playerRectangle = new Rectangle(shipX, shipY, 50, 50);
 
         frame.setFocusable(true);
+        frame.getContentPane().setBackground(Color.BLACK);
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {}
 
             @Override
-            public void keyPressed(KeyEvent e) {
-                // up
-                if (e.getKeyCode() == 38) {
-                    if (shipY < 50) {}
-                    else {
-                        shipY--;
-                        playerRectangle.setLocation(shipX, shipY);
-                    }
-                }
-                // right
-                if (e.getKeyCode() == 39) {
-                    if (shipX > 350) {}
-                    else {
-                        shipX++;
-                        playerRectangle.setLocation(shipX, shipY);
-                    }
-                }
-                // down
-                if (e.getKeyCode() == 40) {
-                    if (shipY > 550) {}
-                    else {
-                        shipY++;
-                        playerRectangle.setLocation(shipX, shipY);
-                    }
-                }
-                // left
-                if (e.getKeyCode() == 37) {
-                    if (shipX < 50) {}
-                    else {
-                        shipX--;
-                        playerRectangle.setLocation(shipX, shipY);
-                    }
-                }
-                // space bar shooting
-                if (e.getKeyCode() == 32) {
-                    shoot();
-                }
+    public void keyPressed(KeyEvent e) {
+        // up
+        if (e.getKeyCode() == 38) {
+            if (shipY > 0) {
+                shipY -= 5;
+                playerRectangle.setLocation(shipX, shipY);
             }
+        }
+        // right
+        if (e.getKeyCode() == 39) {
+            if (shipX < getWidth() - playerRectangle.width) {
+                shipX += 5;
+                playerRectangle.setLocation(shipX, shipY);
+            }
+        }
+        // down
+        if (e.getKeyCode() == 40) {
+            if (shipY < getHeight() - playerRectangle.height) {
+                shipY += 5;
+                playerRectangle.setLocation(shipX, shipY);
+            }
+        }
+        // left
+        if (e.getKeyCode() == 37) {
+            if (shipX > 0) {
+                shipX -= 5;
+                playerRectangle.setLocation(shipX, shipY);
+            }
+        }
+        // space bar shooting
+        if (e.getKeyCode() == 32) {
+            shoot();
+        }
+    }
 
-            @Override
-            public void keyReleased(KeyEvent e) {}
+        @Override
+        public void keyReleased(KeyEvent e) {}
         });
 
         timer = new Timer(10, new ActionListener() {
@@ -106,8 +103,8 @@ public class Game extends JComponent {
     }
 
     private void shoot() {
-        int shipMidpointX = shipX + 25;
-        int shipMidpointY = shipY + 25;
+        int shipMidpointX = shipX + 20;
+        int shipMidpointY = shipY + 20;
         Projectile projectile = new Projectile(shipMidpointX, shipMidpointY);
         projectiles.add(projectile);
     }
@@ -189,12 +186,23 @@ public class Game extends JComponent {
     }
 
     private void drawShip(Graphics graphics) {
-        int shipWidth = 50;  // Width of the ship
-        int shipHeight = 50;  // Height of the ship
+        int shipWidth = 50;  
+        int shipHeight = 50;  
 
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect(shipX, shipY, shipWidth, shipHeight);
+        int[] xPoints = {shipX, shipX + shipWidth, shipX + shipWidth / 2};  
+        int[] yPoints = {shipY + shipHeight, shipY + shipHeight, shipY};  
+
+        if (lives == 3) {
+            graphics.setColor(Color.BLUE);
+        } else if (lives == 2) {
+            graphics.setColor(Color.GREEN);
+        } else if (lives == 1) {
+            graphics.setColor(Color.RED);
+        }
+
+        graphics.fillPolygon(xPoints, yPoints, 3); 
     }
+
 
     private void drawAsteroids(Graphics graphics) {
         for (int i = 0; i < asteroids.size(); i++) {

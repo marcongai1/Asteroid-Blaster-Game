@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 public class Game extends JComponent{
@@ -30,10 +33,7 @@ public class Game extends JComponent{
         frame.setFocusable(true);    
         frame.addKeyListener(new KeyAdapter(){
             @Override
-            public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'keyTyped'");
-            }
+            public void keyTyped(KeyEvent e) {}
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -76,10 +76,7 @@ public class Game extends JComponent{
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
-                throw new UnsupportedOperationException("Unimplemented method 'keyReleased'");
-            }
+            public void keyReleased(KeyEvent e) {}
         });
 
         timer = new Timer(10, new ActionListener(){
@@ -96,7 +93,7 @@ public class Game extends JComponent{
         });
         timer.start();
     }
-    public void updateEnemyRectanges(){
+    public void updateEnemyRectangles(){
         for (int i = 0; i < asteroids.size(); i++) {
             Asteroid asteroid = asteroids.get(i);
             Rectangle enemyRectangle = enemyRectangles.get(i);
@@ -139,7 +136,6 @@ public class Game extends JComponent{
     }
     private void checkProjectileCollisions(){
         for (int i = 0; i < asteroids.size(); i++) {
-            Asteroid asteroid = asteroids.get(i);
             Rectangle enermyRectangle = enemyRectangles.get(i);
     
             for (int j = 0; j < projectiles.size(); j++) {
@@ -177,26 +173,61 @@ public class Game extends JComponent{
         checkForAsteroidCollisions();
         updateAsteroidLocation();
         generateNewAsteroid();
-        checkForAsteroidCollisions();
         updateProjectiles();
+        checkProjectileCollisions();
     }
-    private void drawShip(Graphics graphics){
-
+    private void drawShip(Graphics graphics) {
+        int shipX = 100;  // X-coordinate of the ship's position
+        int shipY = 100;  // Y-coordinate of the ship's position
+        int shipWidth = 50;  // Width of the ship
+        int shipHeight = 50;  // Height of the ship
+    
+        graphics.setColor(Color.BLUE);  
+        graphics.fillRect(shipX, shipY, shipWidth, shipHeight); 
     }
-    private void drawAsteroids(Graphics graphics){
 
+    private void drawAsteroids(Graphics graphics) {
+        for (int i = 0; i < asteroids.size(); i++) {
+            Asteroid asteroid = asteroids.get(i);
+            if (!asteroid.isDestroyed()) {
+                graphics.setColor(Color.WHITE);
+                graphics.fillOval(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50);
+            }
+        }
+        updateEnemyRectangles();
     }
     private void drawProjectiles(Graphics graphics) {
-
+        for (int i = 0; i < projectiles.size(); i++) {
+            Projectile projectile = projectiles.get(i);
+            graphics.setColor(Color.YELLOW);
+            graphics.fillRect(projectile.getX(), projectile.getY(), 10, 10);
+        }
     }
-    private void setEndScreenText(Graphics graphics, String str){
-
+    
+    private void setEndScreenText(Graphics graphics, String str) {
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("Arial", Font.BOLD, 24));
+        FontMetrics fm = graphics.getFontMetrics();
+        int textWidth = fm.stringWidth(str);
+        int x = (getWidth() - textWidth) / 2;
+        int y = getHeight() / 2;
+        graphics.drawString(str, x, y);
     }
-    private void setGameOver(Graphics graphics){
-
+    
+    private void setGameOver(Graphics graphics) {
+        setEndScreenText(graphics, "Game Over");
     }
-    protected void paintComponent(Graphics graphics){
-        
-    } // from JComponent
+    
+    protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+        drawAsteroids(graphics);
+        drawProjectiles(graphics);
+        drawShip(graphics);
+    
+        if (gameOver) {
+            setGameOver(graphics);
+        }
+    }
+    
 
 }

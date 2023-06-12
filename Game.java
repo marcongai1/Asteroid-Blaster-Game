@@ -21,6 +21,7 @@ public class Game extends JComponent {
     JFrame frame;
     Timer timer;
     boolean gameOver;
+    boolean movingDown,movingLeft,movingRight,movingUp;
 
     public Game(JFrame frame) {
         this.frame = frame;
@@ -39,43 +40,41 @@ public class Game extends JComponent {
             public void keyTyped(KeyEvent e) {}
 
             @Override
-    public void keyPressed(KeyEvent e) {
-        // up
-        if (e.getKeyCode() == 38) {
-            if (shipY > 0) {
-                shipY -= 5;
-                playerRectangle.setLocation(shipX, shipY);
-            }
-        }
-        // right
-        if (e.getKeyCode() == 39) {
-            if (shipX < getWidth() - playerRectangle.width) {
-                shipX += 5;
-                playerRectangle.setLocation(shipX, shipY);
-            }
-        }
-        // down
-        if (e.getKeyCode() == 40) {
-            if (shipY < getHeight() - playerRectangle.height) {
-                shipY += 5;
-                playerRectangle.setLocation(shipX, shipY);
-            }
-        }
-        // left
-        if (e.getKeyCode() == 37) {
-            if (shipX > 0) {
-                shipX -= 5;
-                playerRectangle.setLocation(shipX, shipY);
-            }
-        }
-        // space bar shooting
-        if (e.getKeyCode() == 32) {
-            shoot();
-        }
-    }
+            public void keyPressed(KeyEvent e) {
+                int keyCode = e.getKeyCode();
 
-        @Override
-        public void keyReleased(KeyEvent e) {}
+                // Movement
+                if (keyCode == KeyEvent.VK_UP) {
+                    movingUp = true;
+                } else if (keyCode == KeyEvent.VK_DOWN) {
+                    movingDown = true;
+                } else if (keyCode == KeyEvent.VK_LEFT) {
+                    movingLeft = true;
+                } else if (keyCode == KeyEvent.VK_RIGHT) {
+                    movingRight = true;
+                }
+
+                // Shooting
+                if (keyCode == KeyEvent.VK_SPACE) {
+                    shoot();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                int keyCode = e.getKeyCode();
+
+                // Movement
+                if (keyCode == KeyEvent.VK_UP) {
+                    movingUp = false;
+                } else if (keyCode == KeyEvent.VK_DOWN) {
+                    movingDown = false;
+                } else if (keyCode == KeyEvent.VK_LEFT) {
+                    movingLeft = false;
+                } else if (keyCode == KeyEvent.VK_RIGHT) {
+                    movingRight = false;
+                }
+            }
         });
 
         timer = new Timer(10, new ActionListener() {
@@ -178,6 +177,19 @@ public class Game extends JComponent {
     }
 
     private void updateScreen() {
+        //Ship movement
+        if (movingUp && shipY > 0) {
+            shipY -= 5;
+        }
+        if (movingDown && shipY < getHeight() - playerRectangle.height) {
+            shipY += 5;
+        }
+        if (movingLeft && shipX > 0) {
+            shipX -= 5;
+        }
+        if (movingRight && shipX < getWidth() - playerRectangle.width) {
+            shipX += 5;
+        }
         checkForAsteroidCollisions();
         updateAsteroidLocation();
         generateNewAsteroid();

@@ -10,10 +10,10 @@ public class Asteroid {
         asteroidY = 0;
     }
     public int getAsteroidY(){
-        return asteroidX;
+        return asteroidY;
     }
     public int getAsteroidX(){
-        return asteroidY;
+        return asteroidX;
     }
     public boolean isDestroyed(){
         return isDestroyed;

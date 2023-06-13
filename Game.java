@@ -22,6 +22,8 @@ public class Game extends JComponent {
     Timer timer;
     boolean gameOver;
     boolean movingDown,movingLeft,movingRight,movingUp;
+    int remainingTime;
+    int timeMS;
 
     public Game(JFrame frame) {
         this.frame = frame;
@@ -81,8 +83,15 @@ public class Game extends JComponent {
             @Override
             public void actionPerformed(ActionEvent event) {
                 if (gameOver) {
-                    // implement
+                    // game over
                 } else {
+                    timeMS++;
+                    if(timeMS%1000==0){
+                        remainingTime--;
+                        if (remainingTime <= 0) {
+                            remainingTime = 0;
+                        }
+                    }
                     updateScreen();
                     frame.repaint();
                 }
@@ -191,6 +200,7 @@ public class Game extends JComponent {
         if (movingRight && shipX < getWidth() - playerRectangle.width) {
             shipX += 5;
         }
+        playerRectangle.setLocation(shipX, shipY);
         checkForAsteroidCollisions();
         updateAsteroidLocation();
         generateNewAsteroid();
@@ -212,6 +222,8 @@ public class Game extends JComponent {
         } else if (lives == 1) {
             graphics.setColor(Color.RED);
         }
+        else
+            gameOver = true;
 
         graphics.fillPolygon(xPoints, yPoints, 3); 
     }
@@ -247,16 +259,49 @@ public class Game extends JComponent {
     }
 
     private void setGameOver(Graphics graphics) {
-        if(lives==0){}
-        setEndScreenText(graphics, "Game Over");
+        if (lives == 0) {
+            setEndScreenText(graphics, "ALL LIVES LOST, YOU LOSE!");
+        } else if (asteroids.size() == 0) {
+            setEndScreenText(graphics, "ALL ASTEROIDS DESTROYED, YOU WIN!");
+        } else {
+            setEndScreenText(graphics, "OUT OF TIME, YOU LOSE!");
+        }
+        
+        graphics.setColor(Color.RED);
+        graphics.setFont(new Font("Arial", Font.BOLD, 36));
+        FontMetrics fm = graphics.getFontMetrics();
+        int textWidth = fm.stringWidth("GAME OVER!");
+        int x = (getWidth() - textWidth) / 2;
+        int y = getHeight() / 2 + 50;
+        graphics.drawString("GAME OVER!", x, y);
     }
+
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        //Displays Time
+        String timeString = "Time: " + remainingTime + "s";
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("Arial", Font.BOLD, 16));
+        FontMetrics fm = graphics.getFontMetrics();
+        int textWidth = fm.stringWidth(timeString);
+        int x = getWidth() - textWidth - 10;
+        int y = 20;
+        graphics.drawString(timeString, x, y);
+        
+        //Displays Lives
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("Arial", Font.BOLD, 16));
+        graphics.drawString("Lives: " + lives, 10, 20);
+
+        //Displays Score
+        graphics.drawString("Score: " + asteroidsHit, 10, 40);
+        
         drawAsteroids(graphics);
         drawProjectiles(graphics);
         drawShip(graphics);
+        
 
         if (gameOver) {
             setGameOver(graphics);

@@ -103,7 +103,7 @@ public class Game extends JComponent {
 
     private void shoot() {
         int shipMidpointX = shipX + 20;
-        int shipMidpointY = shipY + 20;
+        int shipMidpointY = shipY;
         Projectile projectile = new Projectile(shipMidpointX, shipMidpointY);
         projectiles.add(projectile);
     }
@@ -119,7 +119,8 @@ public class Game extends JComponent {
     }
 
     private void generateNewAsteroid() {
-        if (Math.random() * 5 == 3) {
+        double rand = Math.random();
+        if (rand < 0.01) { 
             Asteroid asteroid = new Asteroid(this);
             asteroids.add(asteroid);
             Rectangle enemyRectangle = new Rectangle(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50);
@@ -217,6 +218,7 @@ public class Game extends JComponent {
 
 
     private void drawAsteroids(Graphics graphics) {
+        updateEnemyRectangles();
         for (int i = 0; i < asteroids.size(); i++) {
             Asteroid asteroid = asteroids.get(i);
             if (!asteroid.isDestroyed()) {
@@ -224,7 +226,6 @@ public class Game extends JComponent {
                 graphics.fillOval(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50);
             }
         }
-        updateEnemyRectangles();
     }
 
     private void drawProjectiles(Graphics graphics) {
@@ -246,6 +247,7 @@ public class Game extends JComponent {
     }
 
     private void setGameOver(Graphics graphics) {
+        if(lives==0){}
         setEndScreenText(graphics, "Game Over");
     }
 

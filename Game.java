@@ -11,6 +11,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 
 public class Game extends JComponent {
     int shipX, shipY, lives, asteroidsHit;
@@ -24,6 +26,7 @@ public class Game extends JComponent {
     boolean movingDown,movingLeft,movingRight,movingUp;
     int remainingTime = 60000;
     int seconds;
+    Image backgroundImage, shipImage, asteroidImage, projectileImage;
 
     public Game(JFrame frame) {
         this.frame = frame;
@@ -34,6 +37,9 @@ public class Game extends JComponent {
         shipY = 500;
         lives = 3;
         playerRectangle = new Rectangle(shipX, shipY, 50, 50);
+        backgroundImage = new ImageIcon("spacebackground.png").getImage();
+        shipImage = new ImageIcon("spaceship.png").getImage();
+        asteroidImage = new ImageIcon("asteroid.png").getImage();
 
         frame.setFocusable(true);
         frame.getContentPane().setBackground(Color.BLACK);
@@ -108,7 +114,7 @@ public class Game extends JComponent {
     }
 
     private void shoot() {
-        int shipMidpointX = shipX + 20;
+        int shipMidpointX = shipX + 24;
         int shipMidpointY = shipY;
         Projectile projectile = new Projectile(shipMidpointX, shipMidpointY);
         projectiles.add(projectile);
@@ -208,7 +214,13 @@ public class Game extends JComponent {
     private void drawShip(Graphics graphics) {
         int shipWidth = 50;  
         int shipHeight = 50;  
-
+        //Ship image
+        graphics.drawImage(shipImage, shipX, shipY, 50, 50, this);
+        if(lives==0){
+            gameOver = true;
+        }
+        //Previous code without the ship image
+        /* 
         int[] xPoints = {shipX, shipX + shipWidth, shipX + shipWidth / 2};  
         int[] yPoints = {shipY + shipHeight, shipY + shipHeight, shipY};  
 
@@ -223,6 +235,7 @@ public class Game extends JComponent {
             gameOver = true;
 
         graphics.fillPolygon(xPoints, yPoints, 3); 
+        */
     }
 
 
@@ -231,8 +244,13 @@ public class Game extends JComponent {
         for (int i = 0; i < asteroids.size(); i++) {
             Asteroid asteroid = asteroids.get(i);
             if (!asteroid.isDestroyed()) {
+                //Asteroid Image
+                graphics.drawImage(asteroidImage, asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50, this);
+                /* 
+                //Previous asteroid
                 graphics.setColor(Color.WHITE);
                 graphics.fillOval(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50);
+                */
             }
         }
     }
@@ -240,8 +258,8 @@ public class Game extends JComponent {
     private void drawProjectiles(Graphics graphics) {
         for (int i = 0; i < projectiles.size(); i++) {
             Projectile projectile = projectiles.get(i);
-            graphics.setColor(Color.YELLOW);
-            graphics.fillRect(projectile.getX(), projectile.getY(), 10, 10);
+            graphics.setColor(Color.RED);
+            graphics.fillRect(projectile.getX(), projectile.getY(), 2, 10);
         }
     }
 
@@ -277,6 +295,10 @@ public class Game extends JComponent {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+        //Draw Background
+        graphics.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+
+        //Timer Logic and Display
         seconds = remainingTime/1000;
         String timeString = "Time: " + seconds + "s";
         graphics.setColor(Color.WHITE);

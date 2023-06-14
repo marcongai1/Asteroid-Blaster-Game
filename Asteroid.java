@@ -7,7 +7,7 @@ public class Asteroid {
     public Asteroid(JComponent component){
         this.component = component;
         asteroidY = 0;
-        asteroidX = (int)(Math.random()*300) + 50;
+        asteroidX = (int)(Math.random()*300) + 25;
     }
     public int getAsteroidY(){
         return asteroidY;
@@ -31,7 +31,7 @@ public class Asteroid {
                 asteroidX = (int)(Math.random()*300) + 50;
             }
             else{
-                asteroidY+=(int)(Math.random()*5);
+                asteroidY+=(int)(Math.random()*8);
             }
         }
     }

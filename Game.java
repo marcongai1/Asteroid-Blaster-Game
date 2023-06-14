@@ -22,8 +22,8 @@ public class Game extends JComponent {
     Timer timer;
     boolean gameOver;
     boolean movingDown,movingLeft,movingRight,movingUp;
-    int remainingTime;
-    int timeMS;
+    int remainingTime = 60000;
+    int seconds;
 
     public Game(JFrame frame) {
         this.frame = frame;
@@ -85,15 +85,12 @@ public class Game extends JComponent {
                 if (gameOver) {
                     // game over
                 } else {
-                    timeMS++;
-                    if(timeMS%1000==0){
-                        remainingTime--;
-                        if (remainingTime <= 0) {
-                            remainingTime = 0;
-                        }
-                    }
                     updateScreen();
                     frame.repaint();
+                    remainingTime-=10;
+                    if(remainingTime==0){
+                        gameOver = true;
+                    }
                 }
             }
         });
@@ -250,7 +247,7 @@ public class Game extends JComponent {
 
     private void setEndScreenText(Graphics graphics, String str) {
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Arial", Font.BOLD, 24));
+        graphics.setFont(new Font("Arial", Font.BOLD, 20));
         FontMetrics fm = graphics.getFontMetrics();
         int textWidth = fm.stringWidth(str);
         int x = (getWidth() - textWidth) / 2;
@@ -280,8 +277,8 @@ public class Game extends JComponent {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        //Displays Time
-        String timeString = "Time: " + remainingTime + "s";
+        seconds = remainingTime/1000;
+        String timeString = "Time: " + seconds + "s";
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("Arial", Font.BOLD, 16));
         FontMetrics fm = graphics.getFontMetrics();
@@ -301,7 +298,6 @@ public class Game extends JComponent {
         drawAsteroids(graphics);
         drawProjectiles(graphics);
         drawShip(graphics);
-        
 
         if (gameOver) {
             setGameOver(graphics);

@@ -1,6 +1,6 @@
 public class Projectile {
     int xPosition, yPosition;
-    final static int SPEED = (int)(Math.random()*6) ;
+    final static int SPEED = 6;
     public Projectile(int xPosition, int yPosition){
         this.xPosition = xPosition;
         this.yPosition = yPosition;

@@ -36,11 +36,10 @@ public class Game extends JComponent {
         shipX = 250;
         shipY = 500;
         lives = 3;
-        playerRectangle = new Rectangle(shipX, shipY, 50, 50);
+        playerRectangle = new Rectangle(shipX, shipY, 40, 40);
         backgroundImage = new ImageIcon("spacebackground.png").getImage();
         shipImage = new ImageIcon("spaceship.png").getImage();
         asteroidImage = new ImageIcon("asteroid.png").getImage();
-
         frame.setFocusable(true);
         frame.getContentPane().setBackground(Color.BLACK);
         frame.addKeyListener(new KeyAdapter() {
@@ -76,13 +75,16 @@ public class Game extends JComponent {
                 int keyCode = e.getKeyCode();
 
                 // Movement
-                if (keyCode == KeyEvent.VK_UP) {
+                if (keyCode == KeyEvent.VK_UP || keyCode == 87) {
                     movingUp = false;
-                } else if (keyCode == KeyEvent.VK_DOWN) {
+                } 
+                else if (keyCode == KeyEvent.VK_DOWN || keyCode == 83) {
                     movingDown = false;
-                } else if (keyCode == KeyEvent.VK_LEFT) {
+                } 
+                else if (keyCode == KeyEvent.VK_LEFT || keyCode == 65) {
                     movingLeft = false;
-                } else if (keyCode == KeyEvent.VK_RIGHT) {
+                } 
+                else if (keyCode == KeyEvent.VK_RIGHT || keyCode == 68) {
                     movingRight = false;
                 }
             }
@@ -138,7 +140,7 @@ public class Game extends JComponent {
         if (rand < 0.01) { 
             Asteroid asteroid = new Asteroid(this);
             asteroids.add(asteroid);
-            Rectangle enemyRectangle = new Rectangle(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 50, 50);
+            Rectangle enemyRectangle = new Rectangle(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 40, 40);
             enemyRectangles.add(enemyRectangle);
         }
     }
@@ -215,8 +217,8 @@ public class Game extends JComponent {
     }
 
     private void drawShip(Graphics graphics) {
-        int shipWidth = 50;  
-        int shipHeight = 50;  
+        // int shipWidth = 50;  
+        // int shipHeight = 50;  
         //Ship image
         graphics.drawImage(shipImage, shipX, shipY, 50, 50, this);
         if(lives==0){
@@ -268,7 +270,7 @@ public class Game extends JComponent {
 
     private void setEndScreenText(Graphics graphics, String str) {
         graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Arial", Font.BOLD, 20));
+        graphics.setFont(new Font("Arial", Font.BOLD, 15));
         FontMetrics fm = graphics.getFontMetrics();
         int textWidth = fm.stringWidth(str);
         int x = (getWidth() - textWidth) / 2;

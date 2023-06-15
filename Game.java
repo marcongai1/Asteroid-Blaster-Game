@@ -27,6 +27,7 @@ public class Game extends JComponent {
     int remainingTime = 60000;
     int seconds;
     Image backgroundImage, shipImage, asteroidImage, projectileImage;
+    boolean survived;
 
     public Game(JFrame frame) {
         this.frame = frame;
@@ -281,13 +282,18 @@ public class Game extends JComponent {
     private void setGameOver(Graphics graphics) {
         if (lives == 0) {
             setEndScreenText(graphics, "ALL LIVES LOST, YOU LOSE!");
-        } else if (asteroids.size() == 0) {
-            setEndScreenText(graphics, "ALL ASTEROIDS DESTROYED, YOU WIN!");
-        } else {
+        } 
+        else if (seconds == 0) {
+            setEndScreenText(graphics, "YOU SURVIVED, YOU WIN!");
+            survived = true;
+        } 
+        else {
             setEndScreenText(graphics, "OUT OF TIME, YOU LOSE!");
         }
-        
-        graphics.setColor(Color.RED);
+        if (survived)
+            graphics.setColor(Color.GREEN);
+        else
+            graphics.setColor(Color.RED);
         graphics.setFont(new Font("Arial", Font.BOLD, 36));
         FontMetrics fm = graphics.getFontMetrics();
         int textWidth = fm.stringWidth("GAME OVER!");

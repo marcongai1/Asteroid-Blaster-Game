@@ -52,13 +52,16 @@ public class Game extends JComponent {
                 int keyCode = e.getKeyCode();
 
                 // Movement
-                if (keyCode == KeyEvent.VK_UP) {
+                if (keyCode == KeyEvent.VK_UP || keyCode == 87) {
                     movingUp = true;
-                } else if (keyCode == KeyEvent.VK_DOWN) {
+                } 
+                else if (keyCode == KeyEvent.VK_DOWN || keyCode == 83) {
                     movingDown = true;
-                } else if (keyCode == KeyEvent.VK_LEFT) {
+                } 
+                else if (keyCode == KeyEvent.VK_LEFT || keyCode == 65) {
                     movingLeft = true;
-                } else if (keyCode == KeyEvent.VK_RIGHT) {
+                } 
+                else if (keyCode == KeyEvent.VK_RIGHT || keyCode == 68) {
                     movingRight = true;
                 }
 

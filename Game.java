@@ -24,30 +24,42 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Game extends JComponent {
     int shipX, shipY, lives, asteroidsHit;
     Rectangle playerRectangle;
-    ArrayList<Rectangle> enemyRectangles;
+    ArrayList<Rectangle> enemyRectangles, powerRectangles;
     ArrayList<Asteroid> asteroids;
     ArrayList<Projectile> projectiles;
+    ArrayList<PowerUp> powerUps;
     JFrame frame;
     Timer timer;
+    Timer multiplierTimer;
     boolean gameOver;
     boolean movingDown,movingLeft,movingRight,movingUp;
     int remainingTime = 60000;
     int seconds;
-    Image backgroundImage, shipImage, asteroidImage, projectileImage;
+    Image backgroundImage, shipImage, asteroidImage, projectileImage, powerUpImage;
     boolean survived;
+    int multiplier = 1;
+    boolean isMulti;
+    int multiplierDuration = 5000;
+    int ms;
+    boolean isPowerUpGenerated = false;
+
 
     public Game(JFrame frame) {
         this.frame = frame;
         asteroids = new ArrayList<>();
         projectiles = new ArrayList<>();
         enemyRectangles = new ArrayList<>();
+        powerRectangles = new ArrayList<>();
+        powerUps = new ArrayList<>();
         shipX = 250;
         shipY = 500;
         lives = 3;
         playerRectangle = new Rectangle(shipX, shipY, 40, 40);
+        //Initialize Images
         backgroundImage = new ImageIcon("spacebackground.png").getImage();
         shipImage = new ImageIcon("spaceship.png").getImage();
         asteroidImage = new ImageIcon("asteroid.png").getImage();
+        powerUpImage = new ImageIcon("powerup.png").getImage();
         frame.setFocusable(true);
         frame.getContentPane().setBackground(Color.BLACK);
         frame.addKeyListener(new KeyAdapter() {
@@ -98,6 +110,15 @@ public class Game extends JComponent {
             }
         });
 
+        multiplierTimer = new Timer(multiplierDuration, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                multiplier = 1; 
+                isMulti = false;
+                multiplierTimer.stop(); 
+            }
+        });
+
         timer = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -115,7 +136,8 @@ public class Game extends JComponent {
         });
         timer.start();
     }
-    public void playSound(String soundFile) {
+    //Method for audio
+    private void playSound(String soundFile) {
         try {
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(soundFile));
             Clip clip = AudioSystem.getClip();
@@ -126,13 +148,11 @@ public class Game extends JComponent {
         }
     }
 
-    public void updateEnemyRectangles() {
+    private void updateEnemyRectangles() {
         for (int i = 0; i < asteroids.size(); i++) {
             Asteroid asteroid = asteroids.get(i);
             Rectangle enemyRectangle = enemyRectangles.get(i);
-            int newX = asteroid.getAsteroidX();
-            int newY = asteroid.getAsteroidY();
-            enemyRectangle.setLocation(newX, newY);
+            enemyRectangle.setLocation(asteroid.getAsteroidX(), asteroid.getAsteroidY());
         }
     }
 
@@ -162,6 +182,33 @@ public class Game extends JComponent {
             asteroids.add(asteroid);
             Rectangle enemyRectangle = new Rectangle(asteroid.getAsteroidX(), asteroid.getAsteroidY(), 40, 40);
             enemyRectangles.add(enemyRectangle);
+        }
+    }
+
+    private void generateNewPowerUp(){
+        if (!isPowerUpGenerated && seconds % 10 == 0) {
+            double rand = Math.random();
+            if (rand < 0.01) {
+                PowerUp powerUp = new PowerUp(this);
+                powerUps.add(powerUp);
+                Rectangle powerRectangle = new Rectangle(powerUp.getPowerUpX(), powerUp.getPowerUpY(), 20, 20);
+                powerRectangles.add(powerRectangle);
+                isPowerUpGenerated = true;
+            }
+        } 
+        else if (seconds % 10 != 0) {
+            isPowerUpGenerated = false;
+        }
+    }
+
+    private void checkPowerUpCollision() {
+        for (int i = powerRectangles.size() - 1; i >= 0; i--) {
+            if (powerRectangles.get(i).intersects(playerRectangle)) {
+                multiplier = 2;
+                isMulti = true;
+                removePowerUp(i);
+                multiplierTimer.restart();
+            }
         }
     }
 
@@ -195,7 +242,7 @@ public class Game extends JComponent {
                 else if (enemyRectangle.intersects(projectileX, projectileY, 10, 10)) {
                     projectiles.remove(j);
                     removeAsteroid(i);
-                    asteroidsHit++;
+                    asteroidsHit = asteroidsHit + 1*multiplier;
                     j--;
                     i--;
                     playSound("explode.wav");
@@ -213,6 +260,26 @@ public class Game extends JComponent {
             newProjectiles.add(projectile);
         }
         projectiles = newProjectiles;
+    }
+
+    private void updatePowerRectangles(){
+        for (int i = 0; i < powerUps.size(); i++){
+            PowerUp powerUp = powerUps.get(i);
+            Rectangle powerRectangle = powerRectangles.get(i);
+            powerRectangle.setLocation(powerUp.getPowerUpX(), powerUp.getPowerUpY());
+        }
+    }
+
+    private void removePowerUp(int index){
+        powerUps.get(index).setCollide(true);
+        powerUps.remove(index);
+        powerRectangles.remove(index);
+    }
+
+    private void updatePowerUpLocation() {
+        for (int i = powerUps.size() - 1; i >= 0; i--) {
+            powerUps.get(i).updatePowerUps();
+        }
     }
 
     private void updateScreen() {
@@ -235,6 +302,9 @@ public class Game extends JComponent {
         generateNewAsteroid();
         updateProjectiles();
         checkProjectileCollisions();
+        checkPowerUpCollision();
+        updatePowerUpLocation();
+        generateNewPowerUp();
     }
 
     private void drawShip(Graphics graphics) {
@@ -286,6 +356,16 @@ public class Game extends JComponent {
             Projectile projectile = projectiles.get(i);
             graphics.setColor(Color.RED);
             graphics.fillRect(projectile.getX(), projectile.getY(), 2, 10);
+        }
+    }
+
+    private void drawPowerUps(Graphics graphics){
+        updatePowerRectangles();
+        for (int i = 0; i < powerUps.size(); i++) {
+            PowerUp powerUp = powerUps.get(i);
+            if (!powerUp.isCollide()) {
+                graphics.drawImage(powerUpImage, powerUp.getPowerUpX(), powerUp.getPowerUpY(), 20, 20, this);
+            }
         }
     }
 
@@ -347,10 +427,12 @@ public class Game extends JComponent {
 
         //Displays Score
         graphics.drawString("Score: " + asteroidsHit, 10, 40);
+        graphics.drawString("2x Multiplier: " + isMulti, 10, 60);
         
         drawAsteroids(graphics);
         drawProjectiles(graphics);
         drawShip(graphics);
+        drawPowerUps(graphics);
 
         if (gameOver) {
             setGameOver(graphics);

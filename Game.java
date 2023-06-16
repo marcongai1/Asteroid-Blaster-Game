@@ -2,6 +2,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -13,6 +14,12 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Image;
 import javax.swing.ImageIcon;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 
 public class Game extends JComponent {
     int shipX, shipY, lives, asteroidsHit;
@@ -108,6 +115,16 @@ public class Game extends JComponent {
         });
         timer.start();
     }
+    public void playSound(String soundFile) {
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(getClass().getResource(soundFile));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void updateEnemyRectangles() {
         for (int i = 0; i < asteroids.size(); i++) {
@@ -124,6 +141,7 @@ public class Game extends JComponent {
         int shipMidpointY = shipY;
         Projectile projectile = new Projectile(shipMidpointX, shipMidpointY);
         projectiles.add(projectile);
+        playSound("blaster.wav");
     }
 
     private void checkForAsteroidCollisions() {
@@ -132,6 +150,7 @@ public class Game extends JComponent {
                 enemyRectangles.remove(i);
                 asteroids.remove(i);
                 lives--;
+                playSound("explode.wav");
             }
         }
     }
@@ -179,6 +198,7 @@ public class Game extends JComponent {
                     asteroidsHit++;
                     j--;
                     i--;
+                    playSound("explode.wav");
                     frame.repaint();
                     break;
                 }

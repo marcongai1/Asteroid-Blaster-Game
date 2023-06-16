@@ -28,7 +28,7 @@ public class Asteroid {
         else{
             if(asteroidY > 600){
                 asteroidY = 0;
-                asteroidX = (int)(Math.random()*300) + 50;
+                asteroidX = (int)(Math.random()*320) + 40;
             }
             else{
                 asteroidY+=(int)(Math.random()*8);

@@ -206,6 +206,7 @@ public class Game extends JComponent {
             if (powerRectangles.get(i).intersects(playerRectangle)) {
                 multiplier = 2;
                 isMulti = true;
+                playSound("powerup.wav");
                 removePowerUp(i);
                 multiplierTimer.restart();
             }

@@ -19,4 +19,4 @@ A 2D space shooter game built with Java and Swing. Dodge and destroy asteroids t
 1. Ensure you have Java JDK installed
 2. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/asteroid-blaster.git
+   git clone https://github.com/marcongai1/Asteroid-Blaster-Game.git
